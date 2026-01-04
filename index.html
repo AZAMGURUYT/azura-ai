@@ -1,204 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>AZURA AI 🤖</title>
+<meta charset="UTF-8">
+<title>AZURA AI 🤖</title>
 
-  <!-- SEO BASIC -->
-  <meta name="description" content="AZURA AI – Personal AI Assistant by AzamGuruYT">
-  <meta name="author" content="AzamGuruYT">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AZURA AI – Advanced Personal AI Assistant by AzamGuruYT">
+<meta name="author" content="AzamGuruYT">
 
-  <!-- FONT -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: radial-gradient(circle at top, #0f2027, #000);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
+<style>
+*{box-sizing:border-box}
+body{
+margin:0;
+font-family:'Poppins',sans-serif;
+background:radial-gradient(circle at top,#0f2027,#000);
+color:#fff;
+height:100vh;
+display:flex;
+flex-direction:column;
+}
 
-    /* ===== HEADER ===== */
-    header {
-      padding: 16px;
-      text-align: center;
-      background: rgba(0,0,0,0.6);
-      backdrop-filter: blur(12px);
-      box-shadow: 0 4px 20px rgba(0,255,255,0.3);
-    }
+/* HEADER */
+header{
+padding:14px;
+text-align:center;
+background:rgba(0,0,0,.7);
+backdrop-filter:blur(12px);
+border-bottom:1px solid rgba(0,242,255,.3);
+}
+header h1{
+margin:0;
+color:#00f2ff;
+font-size:22px;
+letter-spacing:1px;
+}
+header span{
+font-size:12px;
+opacity:.7;
+}
 
-    header h1 {
-      margin: 0;
-      font-size: 22px;
-      color: #00f2ff;
-      letter-spacing: 1px;
-    }
+/* CHAT */
+.chat{
+flex:1;
+padding:20px;
+overflow-y:auto;
+display:flex;
+flex-direction:column;
+gap:14px;
+}
 
-    header p {
-      margin: 4px 0 0;
-      font-size: 13px;
-      opacity: 0.8;
-    }
+.msg{
+max-width:75%;
+padding:14px 16px;
+border-radius:16px;
+font-size:14px;
+line-height:1.5;
+animation:fadeUp .3s ease;
+}
 
-    /* ===== CHAT AREA ===== */
-    .chat-container {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+.user{
+align-self:flex-end;
+background:linear-gradient(135deg,#00f2ff,#0077ff);
+color:#000;
+border-bottom-right-radius:4px;
+}
 
-    .message {
-      max-width: 75%;
-      padding: 14px 16px;
-      border-radius: 16px;
-      font-size: 14px;
-      line-height: 1.5;
-      animation: fadeUp 0.3s ease;
-    }
+.bot{
+align-self:flex-start;
+background:rgba(255,255,255,.08);
+backdrop-filter:blur(10px);
+border:1px solid rgba(0,242,255,.25);
+border-bottom-left-radius:4px;
+}
 
-    .user {
-      align-self: flex-end;
-      background: linear-gradient(135deg,#00f2ff,#0077ff);
-      color: #000;
-      border-bottom-right-radius: 4px;
-    }
+.time{
+font-size:10px;
+opacity:.6;
+margin-top:4px;
+}
 
-    .bot {
-      align-self: flex-start;
-      background: rgba(255,255,255,0.08);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(0,242,255,0.3);
-      border-bottom-left-radius: 4px;
-    }
+/* INPUT */
+.input{
+display:flex;
+gap:10px;
+padding:14px;
+background:rgba(0,0,0,.8);
+backdrop-filter:blur(10px);
+}
+.input input{
+flex:1;
+padding:12px 14px;
+border-radius:25px;
+border:none;
+outline:none;
+font-size:14px;
+}
+.input button{
+padding:12px 18px;
+border-radius:25px;
+border:none;
+cursor:pointer;
+background:#00f2ff;
+color:#000;
+font-weight:600;
+transition:.3s;
+}
+.input button:hover{
+box-shadow:0 0 20px rgba(0,242,255,.7);
+transform:scale(1.05);
+}
 
-    .typing {
-      font-size: 12px;
-      opacity: 0.7;
-      font-style: italic;
-    }
+/* CLEAR */
+.clear{
+position:absolute;
+top:16px;
+right:16px;
+font-size:11px;
+color:#00f2ff;
+cursor:pointer;
+opacity:.8;
+}
+.clear:hover{opacity:1}
 
-    /* ===== INPUT AREA ===== */
-    .input-area {
-      display: flex;
-      padding: 14px;
-      background: rgba(0,0,0,0.7);
-      backdrop-filter: blur(10px);
-      gap: 10px;
-    }
+.typing{
+font-size:12px;
+opacity:.7;
+font-style:italic;
+}
 
-    .input-area input {
-      flex: 1;
-      padding: 12px 14px;
-      border-radius: 25px;
-      border: none;
-      outline: none;
-      font-size: 14px;
-    }
-
-    .input-area button {
-      padding: 12px 20px;
-      border-radius: 25px;
-      border: none;
-      cursor: pointer;
-      background: #00f2ff;
-      color: #000;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
-    .input-area button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 20px rgba(0,242,255,0.7);
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+@keyframes fadeUp{
+from{opacity:0;transform:translateY(10px)}
+to{opacity:1;transform:translateY(0)}
+}
+</style>
 </head>
+
 <body>
 
 <header>
-  <h1>🤖 AZURA AI</h1>
-  <p>Personal AI Assistant by AzamGuruYT</p>
+<h1>🤖 AZURA AI</h1>
+<span>Advanced AI Assistant • by AzamGuruYT</span>
+<div class="clear" onclick="clearChat()">Clear Chat</div>
 </header>
 
-<div class="chat-container" id="chat">
-  <div class="message bot">
-    Hello 👋 I’m <b>AZURA AI</b>.<br>
-    Ask me anything about tech, learning, or ideas 🚀
-  </div>
-</div>
+<div class="chat" id="chat"></div>
 
-<div class="input-area">
-  <input type="text" id="userInput" placeholder="Type your message..." />
-  <button onclick="sendMessage()">Send</button>
+<div class="input">
+<input id="input" placeholder="Ask AZURA anything..." />
+<button onclick="send()">Send</button>
 </div>
 
 <script>
-  const chat = document.getElementById("chat");
-  const input = document.getElementById("userInput");
+const chat=document.getElementById("chat");
+const input=document.getElementById("input");
 
-  function sendMessage() {
-    const text = input.value.trim();
-    if (!text) return;
+const memory=[];
 
-    // User message
-    const userMsg = document.createElement("div");
-    userMsg.className = "message user";
-    userMsg.textContent = text;
-    chat.appendChild(userMsg);
+function timeNow(){
+const d=new Date();
+return d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+}
 
-    input.value = "";
-    chat.scrollTop = chat.scrollHeight;
+function addMessage(text,type){
+const box=document.createElement("div");
+box.className="msg "+type;
+box.innerHTML=text+`<div class="time">${timeNow()}</div>`;
+chat.appendChild(box);
+chat.scrollTop=chat.scrollHeight;
+}
 
-    // Typing indicator
-    const typing = document.createElement("div");
-    typing.className = "message bot typing";
-    typing.textContent = "AZURA AI is typing...";
-    chat.appendChild(typing);
-    chat.scrollTop = chat.scrollHeight;
+function send(){
+const text=input.value.trim();
+if(!text)return;
+addMessage(text,"user");
+memory.push({role:"user",text});
+input.value="";
 
-    // Fake AI reply
-    setTimeout(() => {
-      typing.remove();
-      const botMsg = document.createElement("div");
-      botMsg.className = "message bot";
-      botMsg.innerHTML = getAIResponse(text);
-      chat.appendChild(botMsg);
-      chat.scrollTop = chat.scrollHeight;
-    }, 1200);
-  }
+const typing=document.createElement("div");
+typing.className="msg bot typing";
+typing.innerText="AZURA is thinking...";
+chat.appendChild(typing);
+chat.scrollTop=chat.scrollHeight;
 
-  function getAIResponse(text) {
-    text = text.toLowerCase();
+setTimeout(()=>{
+typing.remove();
+const reply=aiResponse(text);
+addMessage(reply,"bot");
+memory.push({role:"bot",text:reply});
+},1200);
+}
 
-    if (text.includes("hello") || text.includes("hi"))
-      return "Hello 👋 How can I help you today?";
+function aiResponse(text){
+text=text.toLowerCase();
 
-    if (text.includes("azam"))
-      return "Azam is a creator & builder 🚀 This AI belongs to him.";
+if(text.includes("hello")||text.includes("hi"))
+return "Hello 👋 I’m AZURA AI. Ready to assist you.";
 
-    if (text.includes("ai"))
-      return "AI is the future 🤖 and AZURA is just getting started.";
+if(text.includes("who are you"))
+return "I am <b>AZURA AI</b> 🤖 — a next-gen assistant created by AzamGuruYT.";
 
-    return "Interesting question 🤔<br>I’ll get smarter soon. Stay tuned ✨";
-  }
+if(text.includes("azam"))
+return "Azam is a creator, builder & visionary 🚀 This AI belongs to him.";
 
-  // Enter key support
-  input.addEventListener("keydown", e => {
-    if (e.key === "Enter") sendMessage();
-  });
+if(text.includes("website"))
+return "This website is powered by GitHub Pages — fast & free ⚡";
+
+if(text.includes("future"))
+return "Future plan: Real AI, memory, voice & automation 🌌";
+
+return "That’s interesting 🤔 I’m learning every day. Ask me more!";
+}
+
+function clearChat(){
+chat.innerHTML="";
+memory.length=0;
+addMessage("Chat cleared 🧹<br>I’m ready again!", "bot");
+}
+
+input.addEventListener("keydown",e=>{
+if(e.key==="Enter")send();
+});
+
+/* INTRO */
+addMessage(
+"Welcome 👋<br>I’m <b>AZURA AI v2</b> 🚀<br>Ask me about tech, ideas or future.",
+"bot"
+);
 </script>
 
 </body>
