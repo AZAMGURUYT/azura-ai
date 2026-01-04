@@ -155,8 +155,16 @@ to{opacity:1;transform:translateY(0)}
 <script>
 const chat=document.getElementById("chat");
 const input=document.getElementById("input");
-
 const memory=[];
+
+/* 🔹 KNOWLEDGE BASE (GK + ABOUT) */
+const knowledge = [
+  { keys:["who made you","kisne banaya","creator"], ans:"I was created by <b>Azam (AzamGuruYT)</b> 🚀" },
+  { keys:["who are you","tum kaun ho"], ans:"I am <b>AZURA AI</b> 🤖, a smart assistant project." },
+  { keys:["when created","kab banaya"], ans:"AZURA AI was started in <b>2026</b>." },
+  { keys:["website"], ans:"This website is built using <b>HTML, CSS & JavaScript</b> and hosted on GitHub Pages ⚡" },
+  { keys:["future","plans"], ans:"Future plans: Real AI, memory, voice & automation 🌌" }
+];
 
 function timeNow(){
 const d=new Date();
@@ -189,28 +197,36 @@ typing.remove();
 const reply=aiResponse(text);
 addMessage(reply,"bot");
 memory.push({role:"bot",text:reply});
-},1200);
+},1000);
 }
 
+/* 🧠 AI RESPONSE (GK + MATHS) */
 function aiResponse(text){
 text=text.toLowerCase();
 
+/* 1️⃣ Knowledge base */
+for(let item of knowledge){
+  for(let k of item.keys){
+    if(text.includes(k)) return item.ans;
+  }
+}
+
+/* 2️⃣ Maths calculation (SAFE) */
+try{
+  if(/^[0-9+\-*/().\s]+$/.test(text)){
+    const result = Function(`"use strict";return (${text})`)();
+    return `🧮 The answer is <b>${result}</b>`;
+  }
+}catch(e){}
+
+/* 3️⃣ Normal replies */
 if(text.includes("hello")||text.includes("hi"))
 return "Hello 👋 I’m AZURA AI. Ready to assist you.";
-
-if(text.includes("who are you"))
-return "I am <b>AZURA AI</b> 🤖 — a next-gen assistant created by AzamGuruYT.";
 
 if(text.includes("azam"))
 return "Azam is a creator, builder & visionary 🚀 This AI belongs to him.";
 
-if(text.includes("website"))
-return "This website is powered by GitHub Pages — fast & free ⚡";
-
-if(text.includes("future"))
-return "Future plan: Real AI, memory, voice & automation 🌌";
-
-return "That’s interesting 🤔 I’m learning every day. Ask me more!";
+return "🤔 I don’t know this yet, but I’m learning every day!";
 }
 
 function clearChat(){
@@ -225,7 +241,7 @@ if(e.key==="Enter")send();
 
 /* INTRO */
 addMessage(
-"Welcome 👋<br>I’m <b>AZURA AI v2</b> 🚀<br>Ask me about tech, ideas or future.",
+"Welcome 👋<br>I’m <b>AZURA AI v2</b> 🚀<br>You can ask me <b>GK, About me or Maths</b> 🔢",
 "bot"
 );
 </script>
