@@ -34,7 +34,7 @@ radial-gradient(circle at 80% 70%, rgba(255,0,150,.22), transparent 45%),
 linear-gradient(120deg,#0f2027,#203a43,#2c5364);
 background-size:200% 200%;
 animation:bgMove 22s ease-in-out infinite;
-z-index:-3;
+z-index:-4;
 }
 
 @keyframes bgMove{
@@ -48,6 +48,17 @@ z-index:-3;
 position:fixed;
 inset:0;
 background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+pointer-events:none;
+z-index:-3;
+}
+
+/* ===== FLOATING PARTICLES ===== */
+#particles{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
 pointer-events:none;
 z-index:-2;
 }
@@ -80,7 +91,6 @@ color:#00f2ff;
 cursor:pointer;
 opacity:.8;
 }
-.clear:hover{opacity:1}
 
 /* ===== CHAT ===== */
 .chat{
@@ -168,9 +178,9 @@ to{opacity:1;transform:translateY(0)}
 
 <body>
 
-<!-- LIVE BACKGROUND -->
 <div class="live-bg"></div>
 <div class="live-noise"></div>
+<canvas id="particles"></canvas>
 
 <header>
 <h1>🤖 AZURA AI</h1>
@@ -186,83 +196,99 @@ to{opacity:1;transform:translateY(0)}
 </div>
 
 <script>
+/* ===== PARTICLES ===== */
+const canvas=document.getElementById("particles");
+const ctx=canvas.getContext("2d");
+let particles=[];
+
+function resize(){
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+}
+resize();
+addEventListener("resize",resize);
+
+class Particle{
+constructor(){
+this.x=Math.random()*canvas.width;
+this.y=Math.random()*canvas.height;
+this.r=Math.random()*2+0.5;
+this.vx=(Math.random()-.5)*0.3;
+this.vy=(Math.random()-.5)*0.3;
+this.a=Math.random()*0.5+0.2;
+this.c=Math.random()>.5?"0,242,255":"255,0,150";
+}
+draw(){
+ctx.beginPath();
+ctx.fillStyle=`rgba(${this.c},${this.a})`;
+ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+ctx.fill();
+}
+update(){
+this.x+=this.vx;
+this.y+=this.vy;
+if(this.x<0||this.x>canvas.width) this.vx*=-1;
+if(this.y<0||this.y>canvas.height) this.vy*=-1;
+this.draw();
+}
+}
+
+for(let i=0;i<90;i++) particles.push(new Particle());
+
+(function animate(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+particles.forEach(p=>p.update());
+requestAnimationFrame(animate);
+})();
+
+/* ===== CHAT LOGIC ===== */
 const chat=document.getElementById("chat");
 const input=document.getElementById("input");
-const bg=document.querySelector(".live-bg");
 
-/* MOUSE PARALLAX */
-document.addEventListener("mousemove",e=>{
-const x=(e.clientX/window.innerWidth-.5)*20;
-const y=(e.clientY/window.innerHeight-.5)*20;
-bg.style.transform=`translate(${x}px,${y}px) scale(1.05)`;
-});
-
-/* KNOWLEDGE */
 const knowledge=[
-{keys:["who made you","creator","kisne banaya"],ans:"I was created by <b>Azam (AzamGuruYT)</b> 🚀"},
-{keys:["who are you","tum kaun ho"],ans:"I am <b>AZURA AI</b> 🤖, a smart assistant project."},
-{keys:["when created","kab banaya"],ans:"AZURA AI was started in <b>2026</b>."},
-{keys:["website"],ans:"Built with <b>HTML, CSS & JavaScript</b> and hosted on GitHub Pages ⚡"}
+{keys:["who made","creator"],ans:"Created by <b>Azam (AzamGuruYT)</b> 🚀"},
+{keys:["who are you"],ans:"I am <b>AZURA AI</b> 🤖"},
+{keys:["capital of india"],ans:"Capital of India is <b>New Delhi</b> 🇮🇳"}
 ];
 
 function timeNow(){
 return new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
 }
 
-function addMessage(text,type){
-const div=document.createElement("div");
-div.className="msg "+type;
-div.innerHTML=text+`<div class="time">${timeNow()}</div>`;
-chat.appendChild(div);
+function addMessage(t,type){
+const d=document.createElement("div");
+d.className="msg "+type;
+d.innerHTML=t+`<div class="time">${timeNow()}</div>`;
+chat.appendChild(d);
 chat.scrollTop=chat.scrollHeight;
 }
 
 function send(){
-const text=input.value.trim();
-if(!text)return;
-addMessage(text,"user");
+const t=input.value.trim();
+if(!t) return;
+addMessage(t,"user");
 input.value="";
-
-const t=document.createElement("div");
-t.className="msg bot typing";
-t.innerText="AZURA is thinking...";
-chat.appendChild(t);
-
-setTimeout(()=>{
-t.remove();
-addMessage(aiResponse(text),"bot");
-},900);
+setTimeout(()=>addMessage(ai(t),"bot"),700);
 }
 
-function aiResponse(t){
+function ai(t){
 t=t.toLowerCase();
+for(let k of knowledge)
+for(let w of k.keys)
+if(t.includes(w)) return k.ans;
 
-/* KNOWLEDGE */
-for(let i of knowledge){
-for(let k of i.keys){
-if(t.includes(k)) return i.ans;
-}
-}
+if(/^[0-9+\-*/(). ]+$/.test(t))
+return "🧮 Answer: <b>"+eval(t)+"</b>";
 
-/* MATH */
-if(/^[0-9+\-*/(). ]+$/.test(t)){
-try{return `🧮 Answer: <b>${Function("return "+t)()}</b>`;}
-catch{}
-}
-
-if(t.includes("hello")||t.includes("hi"))
-return "Hello 👋 I’m AZURA AI.";
-
-return "🤔 I’m learning… Try GK, Maths or About Azam!";
+return "🤔 Ask me GK, Maths or About Azam!";
 }
 
 function clearChat(){
 chat.innerHTML="";
-addMessage("Chat cleared 🧹 I’m ready again!","bot");
+addMessage("Chat cleared 🧹","bot");
 }
 
-/* INTRO */
-addMessage("Welcome 👋<br>I’m <b>AZURA AI</b><br>Ask GK, Maths or About Azam 🚀","bot");
+addMessage("Welcome 👋 I’m <b>AZURA AI</b> ✨","bot");
 </script>
 
 </body>
