@@ -12,36 +12,77 @@
 
 <style>
 *{box-sizing:border-box}
+
 body{
 margin:0;
 font-family:'Poppins',sans-serif;
-background:radial-gradient(circle at top,#0f2027,#000);
 color:#fff;
 height:100vh;
+overflow:hidden;
 display:flex;
 flex-direction:column;
+background:#000;
 }
 
-/* HEADER */
+/* ===== LIVE BACKGROUND ===== */
+.live-bg{
+position:fixed;
+inset:-20%;
+background:
+radial-gradient(circle at 20% 30%, rgba(0,242,255,.22), transparent 40%),
+radial-gradient(circle at 80% 70%, rgba(255,0,150,.22), transparent 45%),
+linear-gradient(120deg,#0f2027,#203a43,#2c5364);
+background-size:200% 200%;
+animation:bgMove 22s ease-in-out infinite;
+z-index:-3;
+}
+
+@keyframes bgMove{
+0%{transform:translate(0,0) scale(1)}
+50%{transform:translate(-4%,-3%) scale(1.05)}
+100%{transform:translate(0,0) scale(1)}
+}
+
+/* NOISE */
+.live-noise{
+position:fixed;
+inset:0;
+background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+pointer-events:none;
+z-index:-2;
+}
+
+/* ===== HEADER ===== */
 header{
 padding:14px;
 text-align:center;
-background:rgba(0,0,0,.7);
-backdrop-filter:blur(12px);
+background:rgba(0,0,0,.65);
+backdrop-filter:blur(14px);
 border-bottom:1px solid rgba(0,242,255,.3);
+position:relative;
 }
 header h1{
 margin:0;
 color:#00f2ff;
 font-size:22px;
-letter-spacing:1px;
 }
 header span{
 font-size:12px;
 opacity:.7;
 }
 
-/* CHAT */
+.clear{
+position:absolute;
+top:16px;
+right:16px;
+font-size:11px;
+color:#00f2ff;
+cursor:pointer;
+opacity:.8;
+}
+.clear:hover{opacity:1}
+
+/* ===== CHAT ===== */
 .chat{
 flex:1;
 padding:20px;
@@ -81,24 +122,24 @@ opacity:.6;
 margin-top:4px;
 }
 
-/* INPUT */
+/* ===== INPUT ===== */
 .input{
 display:flex;
 gap:10px;
 padding:14px;
-background:rgba(0,0,0,.8);
-backdrop-filter:blur(10px);
+background:rgba(0,0,0,.75);
+backdrop-filter:blur(12px);
 }
 .input input{
 flex:1;
-padding:12px 14px;
+padding:12px 16px;
 border-radius:25px;
 border:none;
 outline:none;
 font-size:14px;
 }
 .input button{
-padding:12px 18px;
+padding:12px 20px;
 border-radius:25px;
 border:none;
 cursor:pointer;
@@ -108,21 +149,9 @@ font-weight:600;
 transition:.3s;
 }
 .input button:hover{
-box-shadow:0 0 20px rgba(0,242,255,.7);
+box-shadow:0 0 20px rgba(0,242,255,.8);
 transform:scale(1.05);
 }
-
-/* CLEAR */
-.clear{
-position:absolute;
-top:16px;
-right:16px;
-font-size:11px;
-color:#00f2ff;
-cursor:pointer;
-opacity:.8;
-}
-.clear:hover{opacity:1}
 
 .typing{
 font-size:12px;
@@ -139,6 +168,10 @@ to{opacity:1;transform:translateY(0)}
 
 <body>
 
+<!-- LIVE BACKGROUND -->
+<div class="live-bg"></div>
+<div class="live-noise"></div>
+
 <header>
 <h1>🤖 AZURA AI</h1>
 <span>Advanced AI Assistant • by AzamGuruYT</span>
@@ -148,34 +181,39 @@ to{opacity:1;transform:translateY(0)}
 <div class="chat" id="chat"></div>
 
 <div class="input">
-<input id="input" placeholder="Ask AZURA anything..." />
+<input id="input" placeholder="Ask GK, Maths or About Azam..." />
 <button onclick="send()">Send</button>
 </div>
 
 <script>
 const chat=document.getElementById("chat");
 const input=document.getElementById("input");
-const memory=[];
+const bg=document.querySelector(".live-bg");
 
-/* 🔹 KNOWLEDGE BASE (GK + ABOUT) */
-const knowledge = [
-  { keys:["who made you","kisne banaya","creator"], ans:"I was created by <b>Azam (AzamGuruYT)</b> 🚀" },
-  { keys:["who are you","tum kaun ho"], ans:"I am <b>AZURA AI</b> 🤖, a smart assistant project." },
-  { keys:["when created","kab banaya"], ans:"AZURA AI was started in <b>2026</b>." },
-  { keys:["website"], ans:"This website is built using <b>HTML, CSS & JavaScript</b> and hosted on GitHub Pages ⚡" },
-  { keys:["future","plans"], ans:"Future plans: Real AI, memory, voice & automation 🌌" }
+/* MOUSE PARALLAX */
+document.addEventListener("mousemove",e=>{
+const x=(e.clientX/window.innerWidth-.5)*20;
+const y=(e.clientY/window.innerHeight-.5)*20;
+bg.style.transform=`translate(${x}px,${y}px) scale(1.05)`;
+});
+
+/* KNOWLEDGE */
+const knowledge=[
+{keys:["who made you","creator","kisne banaya"],ans:"I was created by <b>Azam (AzamGuruYT)</b> 🚀"},
+{keys:["who are you","tum kaun ho"],ans:"I am <b>AZURA AI</b> 🤖, a smart assistant project."},
+{keys:["when created","kab banaya"],ans:"AZURA AI was started in <b>2026</b>."},
+{keys:["website"],ans:"Built with <b>HTML, CSS & JavaScript</b> and hosted on GitHub Pages ⚡"}
 ];
 
 function timeNow(){
-const d=new Date();
-return d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+return new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
 }
 
 function addMessage(text,type){
-const box=document.createElement("div");
-box.className="msg "+type;
-box.innerHTML=text+`<div class="time">${timeNow()}</div>`;
-chat.appendChild(box);
+const div=document.createElement("div");
+div.className="msg "+type;
+div.innerHTML=text+`<div class="time">${timeNow()}</div>`;
+chat.appendChild(div);
 chat.scrollTop=chat.scrollHeight;
 }
 
@@ -183,67 +221,48 @@ function send(){
 const text=input.value.trim();
 if(!text)return;
 addMessage(text,"user");
-memory.push({role:"user",text});
 input.value="";
 
-const typing=document.createElement("div");
-typing.className="msg bot typing";
-typing.innerText="AZURA is thinking...";
-chat.appendChild(typing);
-chat.scrollTop=chat.scrollHeight;
+const t=document.createElement("div");
+t.className="msg bot typing";
+t.innerText="AZURA is thinking...";
+chat.appendChild(t);
 
 setTimeout(()=>{
-typing.remove();
-const reply=aiResponse(text);
-addMessage(reply,"bot");
-memory.push({role:"bot",text:reply});
-},1000);
+t.remove();
+addMessage(aiResponse(text),"bot");
+},900);
 }
 
-/* 🧠 AI RESPONSE (GK + MATHS) */
-function aiResponse(text){
-text=text.toLowerCase();
+function aiResponse(t){
+t=t.toLowerCase();
 
-/* 1️⃣ Knowledge base */
-for(let item of knowledge){
-  for(let k of item.keys){
-    if(text.includes(k)) return item.ans;
-  }
+/* KNOWLEDGE */
+for(let i of knowledge){
+for(let k of i.keys){
+if(t.includes(k)) return i.ans;
+}
 }
 
-/* 2️⃣ Maths calculation (SAFE) */
-try{
-  if(/^[0-9+\-*/().\s]+$/.test(text)){
-    const result = Function(`"use strict";return (${text})`)();
-    return `🧮 The answer is <b>${result}</b>`;
-  }
-}catch(e){}
+/* MATH */
+if(/^[0-9+\-*/(). ]+$/.test(t)){
+try{return `🧮 Answer: <b>${Function("return "+t)()}</b>`;}
+catch{}
+}
 
-/* 3️⃣ Normal replies */
-if(text.includes("hello")||text.includes("hi"))
-return "Hello 👋 I’m AZURA AI. Ready to assist you.";
+if(t.includes("hello")||t.includes("hi"))
+return "Hello 👋 I’m AZURA AI.";
 
-if(text.includes("azam"))
-return "Azam is a creator, builder & visionary 🚀 This AI belongs to him.";
-
-return "🤔 I don’t know this yet, but I’m learning every day!";
+return "🤔 I’m learning… Try GK, Maths or About Azam!";
 }
 
 function clearChat(){
 chat.innerHTML="";
-memory.length=0;
-addMessage("Chat cleared 🧹<br>I’m ready again!", "bot");
+addMessage("Chat cleared 🧹 I’m ready again!","bot");
 }
 
-input.addEventListener("keydown",e=>{
-if(e.key==="Enter")send();
-});
-
 /* INTRO */
-addMessage(
-"Welcome 👋<br>I’m <b>AZURA AI v2</b> 🚀<br>You can ask me <b>GK, About me or Maths</b> 🔢",
-"bot"
-);
+addMessage("Welcome 👋<br>I’m <b>AZURA AI</b><br>Ask GK, Maths or About Azam 🚀","bot");
 </script>
 
 </body>
